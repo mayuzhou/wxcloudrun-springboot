@@ -58,13 +58,13 @@ public class CounterController {
 
 
   @GetMapping(value = "/api/question")
-  ApiResponse getResult(String content) throws Exception {
+  public ApiResponse getResult(String content) throws Exception {
     logger.info("/api/question get request");
     return ApiResponse.ok(chatGPTClient.getCompletion(content));
   }
 
   @GetMapping(value = "/api/cmd")
-  ApiResponse getCmd(String content) {
+  public ApiResponse getCmd(String content) {
     logger.info("/api/cmd get request");
     return ApiResponse.ok(cmdClient.exec(content));
   }
