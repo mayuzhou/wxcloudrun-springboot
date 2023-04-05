@@ -1,6 +1,7 @@
 package com.tencent.wxcloudrun.controller;
 
 import com.tencent.wxcloudrun.service.impl.ChatGPTClient;
+import com.tencent.wxcloudrun.service.impl.CmdClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tencent.wxcloudrun.config.ApiResponse;
@@ -30,6 +31,9 @@ public class CounterController {
   @Autowired
   ChatGPTClient chatGPTClient;
 
+  @Autowired
+  CmdClient cmdClient;
+
   public CounterController(@Autowired CounterService counterService) {
     this.counterService = counterService;
     this.logger = LoggerFactory.getLogger(CounterController.class);
@@ -56,11 +60,14 @@ public class CounterController {
   @GetMapping(value = "/api/question")
   ApiResponse getResult(String content) throws Exception {
     logger.info("/api/question get request");
-
-
     return ApiResponse.ok(chatGPTClient.getCompletion(content));
   }
 
+  @GetMapping(value = "/api/cmd")
+  ApiResponse getCmd(String content) {
+    logger.info("/api/cmd get request");
+    return ApiResponse.ok(cmdClient.exec(content));
+  }
 
   /**
    * 更新计数，自增或者清零
