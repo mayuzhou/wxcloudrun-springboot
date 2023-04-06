@@ -2,6 +2,7 @@ package com.tencent.wxcloudrun.controller;
 
 import com.tencent.wxcloudrun.service.impl.ChatGPTClient;
 import com.tencent.wxcloudrun.service.impl.CmdClient;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.tencent.wxcloudrun.config.ApiResponse;
@@ -9,11 +10,11 @@ import com.tencent.wxcloudrun.dto.CounterRequest;
 import com.tencent.wxcloudrun.model.Counter;
 import com.tencent.wxcloudrun.service.CounterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.List;
@@ -64,9 +65,10 @@ public class CounterController {
   }
 
   @GetMapping(value = "/api/cmd")
-  public ApiResponse getCmd(String content) {
+  public ApiResponse getCmd(@RequestParam String content, HttpServletRequest request) throws IOException, InterruptedException {
     logger.info("/api/cmd get request");
-    return ApiResponse.ok(cmdClient.exec(content));
+    HttpSession session = request.getSession();
+    return ApiResponse.ok(cmdClient.exec(content,session));
   }
 
   /**
