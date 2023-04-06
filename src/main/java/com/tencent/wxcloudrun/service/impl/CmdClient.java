@@ -25,7 +25,7 @@ public class CmdClient {
         String path = (String) session.getAttribute("path");
         if (path == null){
             try {
-                execProcess("sudo useradd -m -s /bin/bash user-"+count.getAndIncrement(), "/app");
+                execProcess("sudo useradd -m -s /bin/sh user-"+count.getAndIncrement(), "/app");
             } catch (Exception e){
                 return e.getMessage();
             }
