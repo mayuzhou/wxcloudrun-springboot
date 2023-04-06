@@ -25,7 +25,7 @@ public class CmdClient {
         String path = (String) session.getAttribute("path");
         if (path == null){
             try {
-                execProcess("sudo useradd -m -s /bin/bash user-"+count.getAndIncrement(), "/");
+                execProcess("sudo useradd -m -s /bin/bash user-"+count.getAndIncrement(), "/app");
             } catch (Exception e){
                 return e.getMessage();
             }
@@ -33,8 +33,7 @@ public class CmdClient {
             session.setAttribute("user", "user-"+count.get());
         }
         String user = (String) session.getAttribute("user");
-        execProcess("su " + user, "/");
-        path = execProcess("su " + user + "&&echo $HOME\n","/");
+        path = execProcess("su " + user + "&&echo $HOME\n","/app");
         try {
             // 指定执行的目录
             File workingDirectory = new File(path);
