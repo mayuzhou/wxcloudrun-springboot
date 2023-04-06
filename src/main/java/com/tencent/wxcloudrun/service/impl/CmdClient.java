@@ -34,7 +34,8 @@ public class CmdClient {
             session.setAttribute("user", "user-"+count.get());
         }
         String user = (String) session.getAttribute("user");
-        path = execProcess("sudo -u " + user + "&&echo $HOME\n","/app");
+        path = execProcess("sudo -u " + user + "&& echo $HOME\n","/app");
+        System.out.println(cmd);
         ret = execProcess(cmd, path);
         return ret;
     }
