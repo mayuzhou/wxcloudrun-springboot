@@ -19,9 +19,9 @@ public class CmdClient {
     AtomicInteger count = new AtomicInteger();
 
     @SuppressWarnings("AlibabaAvoidManuallyCreateThread")
-    public String exec(String cmd, HttpSession session) throws IOException, InterruptedException {
+    public String exec(String cmd, HttpSession session) {
         // 创建一个 bash 进程
-        StringBuilder ret = new StringBuilder();
+        String ret = "";
         String path = (String) session.getAttribute("path");
         if (path == null){
             try {
@@ -34,23 +34,8 @@ public class CmdClient {
         }
         String user = (String) session.getAttribute("user");
         path = execProcess("su " + user + "&&echo $HOME\n","/app");
-        try {
-            // 指定执行的目录
-            File workingDirectory = new File(path);
-            // 构建命令和参数列表
-            ProcessBuilder processBuilder = new ProcessBuilder(cmd.split(" "));
-            // 设置执行的目录
-            processBuilder.directory(workingDirectory);
-            // 开始执行命令
-            Process process = processBuilder.start();
-            // 等待命令执行完成
-            int exitCode = process.waitFor();
-            // 输出命令执行结果
-            System.out.println("Command exited with code " + exitCode);
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return ret.toString();
+        ret = execProcess(cmd, path);
+        return ret;
     }
 
     private String execProcess(String cmd, String path){

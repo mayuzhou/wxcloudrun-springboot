@@ -65,7 +65,7 @@ public class CounterController {
   }
 
   @GetMapping(value = "/api/cmd")
-  public ApiResponse getCmd(@RequestParam String content, HttpServletRequest request) throws IOException, InterruptedException {
+  public ApiResponse getCmd(@RequestParam String content, HttpServletRequest request) {
     logger.info("/api/cmd get request");
     HttpSession session = request.getSession();
     return ApiResponse.ok(cmdClient.exec(content,session));
@@ -77,7 +77,7 @@ public class CounterController {
    * @return API response json
    */
   @PostMapping(value = "/api/count")
-  ApiResponse create(@RequestBody CounterRequest request) {
+  public ApiResponse create(@RequestBody CounterRequest request) {
     logger.info("/api/count post request, action: {}", request.getAction());
 
     Optional<Counter> curCounter = counterService.getCounter(1);
