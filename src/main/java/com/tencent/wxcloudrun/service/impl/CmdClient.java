@@ -26,6 +26,7 @@ public class CmdClient {
         if (path == null){
             try {
                 execProcess("sudo useradd -m -s /bin/sh user-"+count.getAndIncrement(), "/app");
+                execProcess("sudo passwd -m -s /bin/sh user-"+count.getAndIncrement(), "/app");
             } catch (Exception e){
                 return e.getMessage();
             }
@@ -33,7 +34,7 @@ public class CmdClient {
             session.setAttribute("user", "user-"+count.get());
         }
         String user = (String) session.getAttribute("user");
-        path = execProcess("su " + user + "&&echo $HOME\n","/app");
+        path = execProcess("sudo -u " + user + "&&echo $HOME\n","/app");
         ret = execProcess(cmd, path);
         return ret;
     }
