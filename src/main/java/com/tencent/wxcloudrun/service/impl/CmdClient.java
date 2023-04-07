@@ -1,10 +1,12 @@
 package com.tencent.wxcloudrun.service.impl;
 
+import com.tencent.wxcloudrun.model.ProcessClient;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
 import java.io.*;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,23 +22,22 @@ public class CmdClient {
 
     AtomicInteger count = new AtomicInteger();
 
+
     @SuppressWarnings("AlibabaAvoidManuallyCreateThread")
     public String exec(String cmd, HttpSession session) {
         // 创建一个 bash 进程
         String ret = "";
         String path = (String) session.getAttribute("path");
         if (path == null){
-            try {
-                execProcess("sudo useradd -m -s /bin/sh user-"+count.getAndIncrement(), "/app");
-                execProcess("sudo passwd -m -s /bin/sh user-"+count.getAndIncrement(), "/app");
-            } catch (Exception e){
-                return e.getMessage();
-            }
-
-            session.setAttribute("user", "user-"+count.get());
+            session.setAttribute("path", "/");
         }
-        String user = (String) session.getAttribute("user");
-        path = execProcess("sudo -u " + user + "&& echo $HOME\n","/app");
+        if (Objects.equals(cmd.split(" ")[0], "cd")) {
+            if (cmd.split(" ").length == 1){
+                return "cd ?";
+            }
+            session.setAttribute("path", cmd.split(" ")[1]);
+        }
+        path = (String) session.getAttribute("path");
         ret = execProcess(cmd, path);
         return ret;
     }
@@ -81,40 +82,11 @@ public class CmdClient {
     }
 
 
-    public static void main(String[] args) throws IOException {
-        try {
-            // 创建一个进程并执行命令
-            Process process = Runtime.getRuntime().exec("bash");
-
-            // 获取进程的输入输出流
-            OutputStreamWriter writer = new OutputStreamWriter(process.getOutputStream());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-
-            // 发送命令并读取输出
-            writer.write("ll\n");
-            writer.flush();
-
-            String error;
-
-            String line;
-            while (errorReader.ready()&&(line = errorReader.readLine()) != null) {
-                System.out.println(line);
-            }
-
-            while (reader.ready()&&(line = reader.readLine()) != null) {
-                System.out.println(line);
-            }
-
-            // 关闭输入输出流
-            writer.close();
-            reader.close();
-
-            // 等待进程结束
-//            process.waitFor();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) throws IOException, InterruptedException {
+        ProcessClient processClient = new ProcessClient();
+        System.out.println(processClient.invokeCommand("1", "pwd\n"));
+        System.out.println(processClient.invokeCommand("1", "cd .."));
+        System.out.println(processClient.invokeCommand("1", "pwd"));
     }
 
 
