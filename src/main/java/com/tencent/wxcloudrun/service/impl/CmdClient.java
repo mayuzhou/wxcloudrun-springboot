@@ -31,13 +31,15 @@ public class CmdClient {
         if (path == null){
             session.setAttribute("path", "/");
         }
+        path = (String) session.getAttribute("path");
         if (Objects.equals(cmd.split(" ")[0], "cd")) {
             if (cmd.split(" ").length == 1){
                 return "cd ?";
             }
-            session.setAttribute("path", cmd.split(" ")[1]);
+            session.setAttribute("path", path + "/" + cmd.split(" ")[1]);
+            return "";
         }
-        path = (String) session.getAttribute("path");
+
         ret = execProcess(cmd, path);
         return ret;
     }
