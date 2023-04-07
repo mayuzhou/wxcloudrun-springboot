@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.service.impl;
 
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @description TODO
  * @date 2023/4/5 6:11 下午
  */
+@Log4j
 @Component
 public class CmdClient {
 
@@ -35,12 +37,12 @@ public class CmdClient {
         }
         String user = (String) session.getAttribute("user");
         path = execProcess("sudo -u " + user + "&& echo $HOME\n","/app");
-        System.out.println(cmd);
         ret = execProcess(cmd, path);
         return ret;
     }
 
     private String execProcess(String cmd, String path){
+        log.info("invoke cmd");
         StringBuilder sb = new StringBuilder();
         try {
             // 指定执行的目录
